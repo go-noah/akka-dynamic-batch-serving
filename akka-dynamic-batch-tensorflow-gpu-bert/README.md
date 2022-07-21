@@ -2,7 +2,7 @@
 
 
 ## Spec
-- **JAVA 11**
+- **Java 11**
 - **Scala 2.12.15**
 - **SBT 1.6.2**
 - **akka-actor-typed 2.6.8**
@@ -10,6 +10,7 @@
 - **akka-http 10.2.7**
 - **akka-http-caching 10.2.7**
 - **akka-http-spray-json 10.2.7**
+- **tensorflow-core-platform-gpu 0.4.1**
 
 ## 기본 구성
 - **최소한의 코드**, **최소한의 의존성**
@@ -35,7 +36,7 @@ java -Dport=8080 \
 -Dbatch=32 \
 -Dtimeout=10000 \
 -DtakeSpinCountDelay=5 \
--DbertPath=./model \
+-DmodelPath=./model \
 -DvocabPath./model/vocab.txt \
 -Xmx8G \
 -Xms8G \

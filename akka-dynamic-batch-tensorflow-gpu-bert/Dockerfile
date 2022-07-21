@@ -38,7 +38,7 @@ ENTRYPOINT exec java $JVM_OPTS \
 -Dbatch=32 \
 -Dtimeout=10000 \
 -DtakeSpinCountDelay=5 \
--DbertPath=./model \
+-DmodelPath=./model \
 -DvocabPath./model/vocab.txt \
 -Xmx8G \
 -Xms8G \

@@ -16,7 +16,7 @@ object BertSmallNsmc {
   log.info(s"BertSmallNsmc initialize start")
 
   private val INITIALIZE_START_TIME = System.currentTimeMillis()
-  private val BERT_PATH = ConfigManager.bertPath
+  private val BERT_PATH = ConfigManager.modelPath
   private val modelProvider: TensorFlowFunctionProvider = PbLoader(BERT_PATH)
 
   log.info(s"BertSmallNsmc initialize done. elapsedTime=${System.currentTimeMillis() - INITIALIZE_START_TIME}ms")

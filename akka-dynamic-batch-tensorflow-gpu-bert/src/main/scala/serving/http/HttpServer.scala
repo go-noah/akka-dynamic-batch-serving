@@ -15,6 +15,7 @@ object HttpServer extends JsonSupport {
     val routes = bertRoute.route
     log.info(s"Warmup start")
     BertService("warmup")
+
     val bindingFuture = Http().newServerAt("0.0.0.0", HTTP_PORT).bind(routes)
     bindingFuture.onComplete {
       case scala.util.Success(s) =>

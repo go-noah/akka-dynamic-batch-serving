@@ -10,13 +10,16 @@ object ConfigManager {
   val timeout: Int =  System.getProperty("timeout","10000").toInt
   val takeSpinCountDelay : Int =  System.getProperty("takeSpinCountDelay","5").toInt
 
-  val bertPath = System.getProperty("modelPath","./model")
+  val modelPath = System.getProperty("modelPath","./model")
   val vocabPath = System.getProperty("vocabPath","./model/vocab.txt")
 
   log.info("Load config. " +
+    s"port=$port, " +
     s"batch=$batch, " +
     s"timeout=$timeout, " +
-    s"takeSpinCountDelay=$takeSpinCountDelay"
+    s"takeSpinCountDelay=$takeSpinCountDelay" +
+    s"modelPath=$modelPath" +
+    s"vocabPath=$vocabPath"
   )
 
 }

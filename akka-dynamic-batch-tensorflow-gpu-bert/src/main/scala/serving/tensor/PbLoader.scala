@@ -19,8 +19,7 @@ object PbLoader {
     } catch {
       case e: NoSuchElementException =>
         log.warn(s"load error=${e.getMessage}" +
-          s"model=sentence_bert, " +
-          s"version=latest(staging)," +
+          s"model=$pbName, " +
           s"tags=$tags")
         throw e
     }
