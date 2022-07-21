@@ -1,0 +1,14 @@
+project/target
+project/project/target
+target
+.idea
+.bsp
+.vscode
+Append
+Cloning
+Close
+Compressing
+Create
+Downloading
+*.DS_Store
+logs
