@@ -34,11 +34,11 @@ object BertSmallNsmc {
     val type_ids_buf = LongBuffer.wrap(type_ids)
 
     val inputIds: OnnxTensor =
-      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, masks_buf, Array(batchSize.toLong, maxInputLength.toLong))
+      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, inputs_buf, Array(batchSize.toLong, maxInputLength.toLong))
     val tokenTypeIds: OnnxTensor =
       OnnxTensor.createTensor(OrtEnvironment.getEnvironment, type_ids_buf, Array(batchSize.toLong, maxInputLength.toLong))
     val attentionMask: OnnxTensor =
-      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, inputs_buf, Array(batchSize.toLong, maxInputLength.toLong))
+      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, masks_buf, Array(batchSize.toLong, maxInputLength.toLong))
 
     val onnxInputs: Map[String, OnnxTensor] =
       Map("input_ids" -> inputIds, "token_type_ids" -> tokenTypeIds, "attention_mask" -> attentionMask)
