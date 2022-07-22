@@ -31,7 +31,7 @@ docker run -p 8080:8080 akka:0.1
 sbt assembly
 
 java -Dport=8080 \
--Dbatch=32 \
+-Dbatch=256 \
 -Dtimeout=10000 \
 -DtakeSpinCountDelay=5 \
 -DmodelPath=./model/model.onnx \
