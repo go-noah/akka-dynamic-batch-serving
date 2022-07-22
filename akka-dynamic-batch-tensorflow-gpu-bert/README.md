@@ -2,7 +2,7 @@
 
 
 ## Spec
-- **Java 11**
+- **Java 11 (Java 1.8 Support)**
 - **Scala 2.12.15**
 - **SBT 1.6.2**
 - **akka-actor-typed 2.6.8**
@@ -93,7 +93,7 @@ RPS (requests per second):  4146.63
 CPU : Ryzen 9 3950X
 GPU : Nvidia Geforce rtx 3090 (495.29.05)
 ENV : docker.io/nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu18.04
-
+CMD : hey -n 100000 -c 196 http://servicehost:8080/bert?query=이 영화는 최고의 영화입니다
 ```
 
 ```
