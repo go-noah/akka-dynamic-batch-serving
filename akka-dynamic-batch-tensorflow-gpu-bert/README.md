@@ -25,7 +25,7 @@
 ## docker
 ```
 docker build . -f Dockerfile -t akka:0.1
-docker run -p 8080:8080 akka:0.1
+docker run --gpus all -p 8080:8080 akka:0.1
 ```
 
 ## local build & run
