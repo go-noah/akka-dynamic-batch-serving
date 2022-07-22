@@ -8,9 +8,6 @@ import collection.JavaConverters._
 import scala.collection.JavaConversions.mapAsJavaMap
 import ai.onnxruntime.{OnnxTensor, OnnxValue}
 
-case class InputOnnxTensor(inputLayerNames: String,
-                           tensor: Array[Float])
-
 class OnnxProvider(modelPath: String) {
 
   val env: OrtEnvironment = OrtEnvironment.getEnvironment()
