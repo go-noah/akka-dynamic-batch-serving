@@ -26,29 +26,29 @@ object BertSmallNsmc {
     val maxInputLength = input.map(x => x.length).max
     val batchSize = input.length
 
-    val inputArray = input.flatMap(_.padTo(maxInputLength, 1L))
-    val typeArray = Array.fill[Long](batchSize * maxInputLength)(0L)
-    val maskArray = input.flatMap(x => Array.fill[Long](x.length)(1L).padTo(maxInputLength, 0L))
+    val inputs = input.flatMap(_.padTo(maxInputLength, 1L))
+    val masks = input.flatMap(x => Array.fill[Long](x.length)(1L).padTo(maxInputLength, 0L))
+    val type_ids = Array.fill[Long](batchSize * maxInputLength)(0L)
 
-    val inputBuf = LongBuffer.wrap(inputArray)
-    val typesBuf = LongBuffer.wrap(typeArray)
-    val maskBuf = LongBuffer.wrap(maskArray)
+    val inputs_buf = LongBuffer.wrap(inputs)
+    val masks_buf = LongBuffer.wrap(masks)
+    val type_ids_buf = LongBuffer.wrap(type_ids)
 
     val inputIds: OnnxTensor =
-      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, inputBuf, Array(batchSize.toLong, maxInputLength.toLong))
-    val typeIds: OnnxTensor =
-      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, typesBuf, Array(batchSize.toLong, maxInputLength.toLong))
-    val attentionMasks: OnnxTensor =
-      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, maskBuf, Array(batchSize.toLong, maxInputLength.toLong))
+      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, masks_buf, Array(batchSize.toLong, maxInputLength.toLong))
+    val tokenTypeIds: OnnxTensor =
+      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, type_ids_buf, Array(batchSize.toLong, maxInputLength.toLong))
+    val attentionMask: OnnxTensor =
+      OnnxTensor.createTensor(OrtEnvironment.getEnvironment, inputs_buf, Array(batchSize.toLong, maxInputLength.toLong))
 
-    val inputOnnxTensors: Seq[InputOnnxTensor] = Seq(
-      InputOnnxTensor("input_ids", inputIds),
-      InputOnnxTensor("token_type_ids", typeIds),
-      InputOnnxTensor("attention_mask", attentionMasks),
-    )
+    val onnxInputs: Map[String, OnnxTensor] =
+      Map("input_ids" -> inputIds, "token_type_ids" -> tokenTypeIds, "attention_mask" -> attentionMask)
 
-    val result: Iterable[Array[Float]] = onnxProvider.run(inputOnnxTensors)
-      .flatMap(x => x.asInstanceOf[Array[Any]].map(s => s.asInstanceOf[Array[Float]]))
+    val run: Iterable[AnyRef] = onnxProvider.run(onnxInputs).map(x => x.getValue.getValue)
+
+    val result: Iterable[Array[Float]] =
+      run.flatMap(x => x.asInstanceOf[Array[Any]].map(s => s.asInstanceOf[Array[Float]]))
+
     result
 
   }

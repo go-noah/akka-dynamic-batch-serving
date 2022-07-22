@@ -1,17 +1,15 @@
 package serving.onnx
 
-import ai.onnxruntime.{OnnxTensor, OnnxValue, OrtEnvironment, OrtSession}
+import ai.onnxruntime.OrtEnvironment
+import ai.onnxruntime.OrtSession
 
-import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
-import java.nio.LongBuffer
-import java.nio.file.{Files, Paths}
 import java.util
 import collection.JavaConverters._
 import scala.collection.JavaConversions.mapAsJavaMap
-
+import ai.onnxruntime.{OnnxTensor, OnnxValue}
 
 case class InputOnnxTensor(inputLayerNames: String,
-                           tensor: OnnxTensor)
+                           tensor: Array[Float])
 
 class OnnxProvider(modelPath: String) {
 
@@ -27,13 +25,9 @@ class OnnxProvider(modelPath: String) {
 
   val session: OrtSession = env.createSession(modelPath, sessionOptions)
 
-  def run(input: Seq[InputOnnxTensor]): Iterable[(String, OnnxValue)] = {
-
-    val inputs: util.Map[String, OnnxTensor] = mapAsJavaMap(input.map(x => x.inputLayerNames -> x.tensor).toMap)
-    val results: Iterable[(String, OnnxValue)] = session.run(inputs).asScala.map(x => x.getKey -> x.getValue)
-
-    results
-
+  def run(onnxInputs: scala.collection.immutable.Map[String, OnnxTensor]): Iterable[util.Map.Entry[String, OnnxValue]] = {
+    val results: OrtSession.Result = session.run(onnxInputs)
+    results.asScala
   }
 }
 
