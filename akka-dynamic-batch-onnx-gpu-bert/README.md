@@ -1,4 +1,4 @@
-# Akka Dynamic Batch Tensorflow Serving Skeleton Api
+# Akka Dynamic Batch Onnx Serving Skeleton Api
 
 
 ## Spec
