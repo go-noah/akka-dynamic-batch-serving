@@ -35,7 +35,7 @@ RUN sbt clean assembly
 
 ENTRYPOINT exec java $JVM_OPTS \
 -Dport=8080 \
--Dbatch=32 \
+-Dbatch=256 \
 -Dtimeout=10000 \
 -DtakeSpinCountDelay=5 \
 -DmodelPath=./model/model.onnx \
