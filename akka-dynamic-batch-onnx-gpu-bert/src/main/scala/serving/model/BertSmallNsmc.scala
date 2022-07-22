@@ -3,8 +3,7 @@ package serving.model
 import ai.onnxruntime.{OnnxTensor, OrtEnvironment}
 import org.json4s.DefaultFormats
 import serving.config.ConfigManager
-import serving.onnx
-import serving.onnx.{InputOnnxTensor, OnnxProvider}
+import serving.onnx.OnnxProvider
 
 import java.nio.LongBuffer
 
