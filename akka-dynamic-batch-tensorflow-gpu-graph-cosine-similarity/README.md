@@ -49,7 +49,7 @@ Cosine Similarity는 일반적으로 공간에 주어진 단위 벡터의 내적
 ### 주의 사항 
 - **ann-benchmarks 와 비교한 내용은 Recall 1 인 손실 없는 계산이며 배치 라이브러리 호출이 아닌 rest api의 end2end로 측정되었습니다.**
 - **ann-benchmarks 와 비교는 공정한 비교가 아닙니다. AWS의 CPU r5.4xlarge 에서 측정 되었으며 현 예제의 GPU와는 큰 환경 차이가 있습니다.**
-- **테스트에서 recall은 1로 계산 되었습니다. 하지만 부동 소수점 연산의 비 결정성에 의한 오차가 발생할 수 있습니다. Dynamic Batch 상황시 cublas의 MatmulAlgoGetHeuristic의 동작에 의한 묵시적인 GEMM 알고리즘 변경으로 수치적 오차가 생길 가능성이 있습니다.**
+- **Dynamic Batch 상황시 cublas의 MatmulAlgoGetHeuristic의 동작에 의한 묵시적인 GEMM 알고리즘 변경으로 수치적 오차가 생길 가능성이 있습니다.**
 - **예제는 ANN의 문제를 해결하기 위한 내용이 아닙니다. 임의의 모델을 jvm 환경에서 동적으로 생성하거나 학습하고 그것을 GPU 친화적으로 서빙하는 내용에 중점을 실제로는 대 규모의 모델을 jvm 계열의 데이터 워크로드와 결합 하는데 적합합니다.**
 
 
