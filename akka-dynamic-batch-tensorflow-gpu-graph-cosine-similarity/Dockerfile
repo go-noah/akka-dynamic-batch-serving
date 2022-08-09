@@ -39,7 +39,7 @@ ENTRYPOINT exec java $JVM_OPTS \
 -Dtimeout=10000 \
 -Ddim=100 \
 -Dsample=10000 \
--DnpyFile=./model/10000-100.npy
+-DnpyFile=./model/10000-100.npy \
 -DtakeSpinCountDelay=5 \
 -Xmx8G \
 -Xms8G \
