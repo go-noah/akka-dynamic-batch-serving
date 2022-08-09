@@ -12,9 +12,6 @@ import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
-final case class Embedding(embedding: Array[Float])
-final case class ResultResponse(result: Array[(Int, Float)])
-
 class CosineSimilarityRoute extends JsonSupport {
   private val log = org.slf4j.LoggerFactory.getLogger(this.getClass)
 

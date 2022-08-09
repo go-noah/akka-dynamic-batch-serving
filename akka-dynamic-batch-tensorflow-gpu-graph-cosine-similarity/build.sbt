@@ -14,7 +14,6 @@ val LogbackVersion = "1.2.10"
 
 libraryDependencies ++= Seq(
   "org.jetbrains.bio" % "npy" % "0.3.5",
-  "com.typesafe" % "config" % "1.4.1",
   "org.json4s" %% "json4s-jackson" % "4.0.2",
   "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
   "com.typesafe.akka" %% "akka-stream" % AkkaVersion,

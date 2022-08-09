@@ -5,7 +5,7 @@ import akka.http.caching.scaladsl.{Cache, CachingSettings, LfuCacheSettings}
 import akka.http.caching.LfuCache
 import serving.config.ConfigManager.takeSpinCountDelay
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
 import scala.concurrent.Future
 
 class AkkaCache[V <: Any](name: String,
@@ -48,7 +48,7 @@ class AkkaCache[V <: Any](name: String,
     value
   }
 
-  def put(key: K, value: V, ttl: Option[Duration] = None): Future[V] = {
+  def put(key: K, value: V): Future[V] = {
     lfuCache.put(key, Future.successful(value))
   }
 

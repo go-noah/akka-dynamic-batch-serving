@@ -5,6 +5,8 @@ import org.tensorflow.{Graph, SavedModelBundle, Session, Tensor}
 import scala.collection.JavaConverters._
 import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
 
+case class InputTensor(inputLayerNames: String, tensor: Tensor)
+
 class TensorFlowProvider(graph: Graph) extends AutoCloseable {
 
   private val session: Session = new Session(graph)

@@ -1,6 +1,6 @@
 package serving.cache
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationInt
 
 object AkkaCacheManager {
   val CosineCache: AkkaCache[Array[(Int,Float)]] =
