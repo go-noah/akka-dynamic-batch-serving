@@ -5,10 +5,11 @@ import com.typesafe.config.ConfigFactory
 object ConfigManager {
   private val log = org.slf4j.LoggerFactory.getLogger(this.getClass)
   private val config = ConfigFactory.load
-  val port: Int =  System.getProperty("port","8000").toInt
+  val port: Int =  System.getProperty("port","8080").toInt
   val timeout: Int =  System.getProperty("timeout","10000").toInt
   val takeSpinCountDelay : Int =  System.getProperty("takeSpinCountDelay","5").toInt
 
+  val topK: Int = System.getProperty("topK","10").toInt
   val dim: Int = System.getProperty("dim","100").toInt
   val sample: Int =  System.getProperty("sample","10000").toInt
   val batch: Int =  System.getProperty("batch","16").toInt
@@ -19,6 +20,7 @@ object ConfigManager {
     s"batch=$batch, " +
     s"timeout=$timeout, " +
     s"takeSpinCountDelay=$takeSpinCountDelay" +
+    s"topK=$topK" +
     s"dim=$dim" +
     s"sample=$sample" +
     s"batch=$batch" +

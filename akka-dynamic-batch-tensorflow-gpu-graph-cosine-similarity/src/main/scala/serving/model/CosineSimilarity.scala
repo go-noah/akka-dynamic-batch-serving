@@ -23,6 +23,7 @@ object CosineSimilarity {
 
   val wLength: Int = ConfigManager.sample
   val dim: Int = ConfigManager.dim
+  val topK: Int = ConfigManager.topK
 
   log.info(s"CosineSimilarity Initialize start")
 
@@ -32,11 +33,11 @@ object CosineSimilarity {
     NpyFile.read(Paths.get(npyFilePath),Int.MaxValue).asFloatArray()
   }
 
-  def model(k: Int = 100): Graph = {
+  def model(k:Int): Graph = {
 
     val wArray: Array[Float] = dataVectorNumpyArray
 
-    assert(wArray.length == (dim * wLength))
+    assert(wArray.length == (dim * wLength), "npy file does not match size and dimension and sample length.")
 
     val graph = new Graph()
     val tf = Ops.create(graph)
@@ -50,16 +51,16 @@ object CosineSimilarity {
 
     val mul = tf.math.mul(v, wTensor)
     val cosineSimilarity = tf.reduceSum(mul, tf.array(1))
-    val topK = tf.withName("output").nn.topK(cosineSimilarity, tf.constant(k))
+    val nnTopK = tf.withName("output").nn.topK(cosineSimilarity, tf.constant(k))
 
     graph
 
   }
 
-  private val modelProvider: TensorFlowProvider = new TensorFlowProvider(model())
+  private val modelProvider: TensorFlowProvider = new TensorFlowProvider(model(k = topK))
 
 
-  def run(v: Array[Array[Float]], dim: Int = dim, k: Int = 100): Array[Array[(Int, Float)]] = {
+  def run(v: Array[Array[Float]], dim: Int = dim, k: Int): Array[Array[(Int, Float)]] = {
     val startTime = System.currentTimeMillis()
 
     val vLength: Int = v.length
@@ -103,7 +104,7 @@ object CosineSimilarity {
   }
 
   def apply(v: Array[Array[Float]]): Array[Array[(Int, Float)]] = {
-    run(v)
+    run(v, k = topK)
   }
 
 }
