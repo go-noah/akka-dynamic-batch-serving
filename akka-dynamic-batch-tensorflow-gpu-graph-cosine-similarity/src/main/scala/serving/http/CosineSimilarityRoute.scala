@@ -25,9 +25,9 @@ class CosineSimilarityRoute extends JsonSupport {
 
   private def CosRoute(): Route =
     pathPrefix("cos") {
-        entity(as[Embedding]) { emb =>
+      entity(as[Embedding]) { emb =>
 
-        val scoreF: Future[Option[Array[(Int, Float)]]]  = CosineSimilarityService(emb)
+        val scoreF: Future[Option[Array[(Int, Float)]]] = CosineSimilarityService(emb)
 
         val resultF: Future[StandardRoute] = scoreF.map {
           case Some(prob) =>

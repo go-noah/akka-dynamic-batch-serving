@@ -3,7 +3,7 @@ package serving.cache
 import serving.akka.AkkaManager._
 import akka.http.caching.scaladsl.{Cache, CachingSettings, LfuCacheSettings}
 import akka.http.caching.LfuCache
-import serving.config.ConfigManager.takeSpinCountDelay
+import serving.config.ConfigManager
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.Future
@@ -14,6 +14,8 @@ class AkkaCache[V <: Any](name: String,
                           newTimeToIdle: Duration) {
   private val log = org.slf4j.LoggerFactory.getLogger(this.getClass)
   type K = String
+
+  val takeSpinCountDelay: Int = ConfigManager.takeSpinCountDelay
 
   val defaultCachingSettings: CachingSettings = CachingSettings(system)
 

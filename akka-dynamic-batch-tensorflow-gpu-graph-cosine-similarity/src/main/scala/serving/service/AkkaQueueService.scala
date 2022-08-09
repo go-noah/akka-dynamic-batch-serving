@@ -21,7 +21,7 @@ object AkkaQueueService {
 
 
   private val queue: SourceQueueWithComplete[(K, V)] =
-    Source.queue[(K, V)](BUFFER_SIZE, OverflowStrategy.backpressure)
+    Source.queue[(K, V)](BUFFER_SIZE, OverflowStrategy.dropHead)
       .groupedWithin(PROCESS_SIZE, 5.millis)
       .toMat(Sink.foreach((x: Seq[(K, V)]) => betch(x)))(Keep.left)
       .run()

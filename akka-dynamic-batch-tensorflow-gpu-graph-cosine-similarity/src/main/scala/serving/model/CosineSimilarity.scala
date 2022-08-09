@@ -21,44 +21,41 @@ object CosineSimilarity {
   private val log = org.slf4j.LoggerFactory.getLogger(this.getClass)
   implicit val formats: DefaultFormats = DefaultFormats
 
-  val wLength: Int = ConfigManager.sample
-  val dim: Int = ConfigManager.dim
-  val topK: Int = ConfigManager.topK
+  private val wLength: Int = ConfigManager.sample
+  private val dim: Int = ConfigManager.dim
+  private val topK: Int = ConfigManager.topK
 
   log.info(s"CosineSimilarity Initialize start")
 
-  val dataVectorNumpyArray: Array[Float] = {
+  private val modelProvider: TensorFlowProvider = new TensorFlowProvider(model(k = topK))
+
+  private val dataVectorNumpyArray: Array[Float] = {
     val npyFilePath = ConfigManager.npyFile
     log.info(s"Npy file load = ${npyFilePath}")
-    NpyFile.read(Paths.get(npyFilePath),Int.MaxValue).asFloatArray()
+    NpyFile.read(Paths.get(npyFilePath), Int.MaxValue).asFloatArray()
   }
 
-  def model(k:Int): Graph = {
+  def model(k: Int): Graph = {
 
     val wArray: Array[Float] = dataVectorNumpyArray
 
-    assert(wArray.length == (dim * wLength), "npy file does not match size and dimension and sample length.")
+    assert(wArray.length == (dim * wLength),
+      f"${wArray.length} != ${dim} * ${wLength} npy file does not match size and dimension and sample length. ")
 
     val graph = new Graph()
     val tf = Ops.create(graph)
-
     val wTensor: Constant[TFloat32] = {
-      val fp32 = DataBuffers.ofFloats(wLength * dim).write(wArray,0,wLength * dim)
-      tf.constant(Shape.of(1, dim, wLength), fp32)
+      val fp32Buf = DataBuffers.ofFloats(wLength * dim).write(wArray, 0, wLength * dim)
+      tf.constant(Shape.of(1, dim, wLength), fp32Buf)
     }
-
-    val v = tf.withName("input").placeholder(classOf[TFloat32], Placeholder.shape(Shape.of(-1, dim, 1)))
-
-    val mul = tf.math.mul(v, wTensor)
+    val vTensor = tf.withName("input").placeholder(classOf[TFloat32],
+      Placeholder.shape(Shape.of(-1, dim, 1)))
+    val mul = tf.math.mul(vTensor, wTensor)
     val cosineSimilarity = tf.reduceSum(mul, tf.array(1))
     val nnTopK = tf.withName("output").nn.topK(cosineSimilarity, tf.constant(k))
 
     graph
-
   }
-
-  private val modelProvider: TensorFlowProvider = new TensorFlowProvider(model(k = topK))
-
 
   def run(v: Array[Array[Float]], dim: Int = dim, k: Int): Array[Array[(Int, Float)]] = {
     val startTime = System.currentTimeMillis()

@@ -1,6 +1,6 @@
 package serving.tensor
 
-import org.tensorflow.{Graph, SavedModelBundle, Session, Tensor}
+import org.tensorflow.{Graph, Session, Tensor}
 
 import scala.collection.JavaConverters._
 import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
