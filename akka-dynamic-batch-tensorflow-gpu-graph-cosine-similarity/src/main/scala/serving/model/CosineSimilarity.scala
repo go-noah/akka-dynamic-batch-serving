@@ -27,20 +27,19 @@ object CosineSimilarity {
 
   log.info(s"CosineSimilarity Initialize start")
 
-  private val modelProvider: TensorFlowProvider = new TensorFlowProvider(model(k = topK))
-
   private val dataVectorNumpyArray: Array[Float] = {
     val npyFilePath = ConfigManager.npyFile
     log.info(s"Npy file load = ${npyFilePath}")
     NpyFile.read(Paths.get(npyFilePath), Int.MaxValue).asFloatArray()
   }
 
+  private val modelProvider: TensorFlowProvider = new TensorFlowProvider(model(k = topK))
+
   def model(k: Int): Graph = {
 
     val wArray: Array[Float] = dataVectorNumpyArray
 
-    assert(wArray.length == (dim * wLength),
-      f"${wArray.length} != ${dim} * ${wLength} npy file does not match size and dimension and sample length. ")
+    assert(wArray.length == (dim * wLength), f"${wArray.length} != ${dim} * ${wLength} npy file does not match size and dimension and sample length. ")
 
     val graph = new Graph()
     val tf = Ops.create(graph)

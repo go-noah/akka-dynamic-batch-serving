@@ -34,8 +34,8 @@ class AkkaCache[V <: Any](name: String,
   log.info("AkkaCache config. " +
     s"withInitialCapacity=$size, " +
     s"withMaxCapacity=$size, " +
-    s"withTimeToLive=$newTimeToLive" +
-    s"withTimeToIdle=$newTimeToIdle" +
+    s"withTimeToLive=$newTimeToLive, " +
+    s"withTimeToIdle=$newTimeToIdle, " +
     s"takeSpinCountDelay=$takeSpinCountDelay"
   )
 

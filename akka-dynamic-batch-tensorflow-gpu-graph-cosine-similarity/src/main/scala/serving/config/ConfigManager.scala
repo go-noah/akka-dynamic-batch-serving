@@ -16,11 +16,11 @@ object ConfigManager {
     s"port=$port, " +
     s"batch=$batch, " +
     s"timeout=$timeout, " +
-    s"takeSpinCountDelay=$takeSpinCountDelay" +
-    s"topK=$topK" +
-    s"dim=$dim" +
-    s"sample=$sample" +
-    s"batch=$batch" +
+    s"takeSpinCountDelay=$takeSpinCountDelay, " +
+    s"topK=$topK, " +
+    s"dim=$dim, " +
+    s"sample=$sample, " +
+    s"batch=$batch, " +
     s"npyFile=$npyFile"
   )
 
