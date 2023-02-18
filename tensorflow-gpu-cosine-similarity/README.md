@@ -13,7 +13,7 @@
 - **akka-http-spray-json 10.2.7**
 - **tensorflow-core-platform-gpu 0.4.1**
 
-banchmark
+benchmark
 ----------------------------------------------------------------
 ```
 CPU : Ryzen 9 3950X
