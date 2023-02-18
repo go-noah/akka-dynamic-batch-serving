@@ -82,7 +82,7 @@ output = prepare(onnx_model)
 output.export_graph("model")
 ```
 
-banchmark
+benchmark
 ----------------------------------------------------------------
 ```
 koelectra-small 
