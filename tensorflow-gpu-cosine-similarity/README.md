@@ -41,50 +41,51 @@ table value 0 -> Cuda Out Of Memory
 ```
 
 
+
 ## Introduction
 
-본 프로젝트는 tensorflow-java 사용하여 jvm 환경에서 GPU로 연산을 가속하고 서비스 api로 활용하는 내용을 중심으로 구성되어 있습니다.
-모든 구현은 가장 Naive 방식을 선택하였고 GPU와 Dynamic Batch의 활용을 설명하고 실제로 간단히 구현 하는데 초점을 맞추고 있습니다.
+This project is centered around using tensorflow-java to accelerate computation with GPUs in a jvm environment and utilizing it as a service api.
+All implementations have been chosen to be the most naive and focus on demonstrating the use of GPUs and Dynamic Batch, as well as a simple implementation in practice.
 
-Cosine Similarity는 일반적으로 공간에 주어진 단위 벡터의 내적을 통하여 계산이 되고 -1 ~ 1 사이의 값을 갖는 각 거리로써 일반적으로 벡터간의 유사도 값으로 간주하여 여러 용도로 사용됩니다. 해당 연산은 정의상 모든 대상 벡터와 연산을 해야하는 Brute Force 형태의 계산이 필요합니다. 이를 매우 효과적으로 근사하는 방법은 없기 떄문에 대규모 연산 혹은 서비스 시점에는 최근접 이웃 (ANN - Approximate Nearest Neighbor) 방식을 통하여 Recall을 희생하여 계산 성능을 올리는 방식이 Best Practice로 알려져 있습니다.
+Cosine Similarity has many uses, as it is typically computed over the eigenvalues of unit vectors given in space, with each distance having a value between -1 and 1, and is generally considered a similarity value between vectors. By definition, this is a brute force type of computation that requires an operation with every target vector. There is no way to approximate this very effectively, so for large scale computations or service points, it is best practice to use an ANN (Approximate Nearest Neighbor) to increase computational performance at the expense of recall.
 
-### ANN 방식엔 크게 다음과 같은 문제점들이 존재합니다.
+### ANN method has the following problems.
 
-- **유사도 계산 대상 벡터의 대한 초기 빌드 시간이 필요합니다.**
-- **유사도 top k 를 추출할 경우 k 값이 일정 수준 이상일 경우 근사 성능이 감소합니다.**
-- **벡터의 차원이 커질 경우 근사 성능이 크게 감소합니다. 즉 ANN을 사용할 경우 100 ~ 256 차원 이상이라면 적절한 차원 축소가 필요합니다.**
-- **벡터의 숫자가 100,000 미만인 경우 ANN은 구조상 연산 성능에 큰 이득이 존재 하지 않습니다.**
-- **즉 비교적 높은 차원의 벡터를 다루면서 많은 top k가 필요하거나 충분히 대상 벡터가 적다면 ANN의 활용도가 줄어듭니다.**
+- It requires an initial build time for the vectors to be computed for similarity.
+- When extracting the top k similarities, the approximation performance decreases for values of k above a certain level.
+- Approximation performance decreases significantly as the dimensionality of the vector increases, i.e., if it is more than 100 to 256 dimensions when using an ANN, proper dimensionality reduction is required.**
+- **When the number of digits in the vector is less than 100,000, ANNs do not have a significant computational performance gain due to their structure.**
+- **This means that if you are dealing with relatively high dimensional vectors and need a large top k, or if there are not enough target vectors, ANNs will be less useful.**
 
-### 본 프로젝트에서는 다음과 같이 문제점을 해결합니다.
+### In this project, we address the problem as follows.
 
-- **대상 벡터는 동적으로 모델 그래프를 생성하여 GPU의 상수 메모리로 고정합니다.**
-- **메트릭스 연산으로 표현되는 내적 연산을 Tensorflow Graph의 텐서 연산을 통해서 동적 배치로 다수를 한번에 처리합니다.**
-- **L2norm 연산과 Transpose 연산이 런타임에 불필요하게 일어나지 않도록 사전에 처리하여 저장하고 로딩합니다.**
-- **akka-http, akka-stream 을 통하여 Dynamic Batch를 구현하고 Akka Http의 비동기 처리를 통하여 수 백 ~ 수 천 요청을 동시에 처리합니다.**
+- **The target vectors are fixed in constant memory on the GPU by dynamically generating a model graph.
+- The inner operations, represented by metric operations, are dynamically batched with tensor operations in the Tensorflow Graph to process many at once.
+- Pre-processes and stores and loads L2norm and Transpose operations in advance to avoid unnecessary runtime operations.
+- **Implement Dynamic Batch through akka-http, akka-stream, and asynchronous processing of Akka Http to process hundreds to thousands of requests simultaneously.
 
-### 기존의 Best Practice와 SOTA 대비 다음과 같은 성능과 장점을 얻습니다.
+### Achieve the following performance and advantages over traditional best practices and SOTA.
 
-- **http://ann-benchmarks.com 의 SOTA(ScaNN, 0.9876) 대비 Recal을 희생하지 않고 약 55 ~ 65% RPS(request per second)를 얻습니다.**
-- **glove-100-angular 벤치마크 데이터 셋 기준 SOTA(ScaNN, 182초) 대비 2초 이내로 로딩 되며 배포시 5초 내외로 서버가 구동 됩니다.**
-- **100,000 수준의 벡터의 경우 100 ~ 2048 차원에 대해서 4000 ~ 260 수준의 RPS(request per second)를 얻습니다.**
-- **대상 벡터는 python의 numpy 형식을 통하여 npy 파일로 로드 할 수 있습니다.**
-- **여러 환경으로 빌드된 tensorflow 런타임을 사용하기 때문에 linux, windows, mac등 여러 환경에서 쉽게 사용될 수 있습니다.**
-- **비교적 작은 프로덕션 환경에서 Recall의 감소없이 throughput, latency를 고려하고 배포 파이프 라인을 단순화 하기 위한 목적으로 예제의 사용을 추천합니다.**
+- **Gain approximately 55 to 65% request per second (RPS) without sacrificing recall compared to SOTA (ScaNN, 0.9876) for http://ann-benchmarks.com.** **Gain approximately 55 to 65% RPS compared to SOTA (ScaNN, 0.9876) for http://ann-benchmarks.com.
+- **Loads in less than 2 seconds versus SOTA (ScaNN, 182 seconds) on the glove-100-angular benchmark dataset and spins up servers in less than 5 seconds when deployed.**
+- **For a 100,000-level vector, we get between 4000 and 260 requests per second (RPS) for 100 to 2048 dimensions.**
+- Target vectors can be loaded as npy files via python's numpy format.
+- It uses the tensorflow runtime which is built for multiple environments, so it can be easily used on linux, windows, mac, etc.
+- **We recommend using examples in relatively small production environments to consider throughput, latency, and to simplify the deployment pipeline without reducing recall.**
 
-### 주의 사항 
-- **ann-benchmarks 와 비교한 내용은 Recall 1 인 손실 없는 계산이며 배치 라이브러리 호출이 아닌 rest api의 end2end로 측정되었습니다.**
-- **ann-benchmarks 와 비교는 공정한 비교가 아닙니다. ann-benchmarks는 AWS의 CPU r5.4xlarge 에서 측정 되었으며 현 예제의 GPU와는 환경과는 큰 차이가 있습니다.**
-- **Dynamic Batch 상황시 cublas의 MatmulAlgoGetHeuristic의 동작에 의한 묵시적인 GEMM 알고리즘 변경으로 수치적 오차가 생길 가능성이 있습니다.**
-- **GPU 메모리의 사양에 따라서 최대 가용 가능한 Dynamic Batch의 크기가 달라집니다. 일반적으로 메모리가 허용하는한 큰 값을 주는것이 더 높은 RPS 성능을 보입니다.**
+### Caveats. 
+- **Comparison with ann-benchmarks is a lossless calculation with a Recall of 1 and measured with end2end of the REST API, not batch library calls.** **Comparison with ann-benchmarks is a lossless calculation with a Recall of 1.
+- Comparisons to ann-benchmarks are not a fair comparison. ann-benchmarks were measured on a CPU r5.4xlarge on AWS, which is a very different environment than the GPU in the current example.**
+- Numerical errors may be caused by implicit GEMM algorithm changes due to the behavior of cublas' MatmulAlgoGetHeuristic in dynamic batch situations.
+- **The maximum available Dynamic Batch size depends on the specifications of the GPU memory. In general, giving it as large a value as your memory allows will result in higher RPS performance.
 
 
-## 기본 구성
-- **최소한의 코드**, **최소한의 의존성**
-- **Tensorflow-java-gpu** 를 Serving Runtime 으로 사용
-- **akka-http** 를 통한 rest api 구성
-- **akka-stream** 을 통한 dynamic batching 구현
-- tensorflow-java 동적 그래프 생성을 통한 jvm gpu 연산 가속 및 serving
+## Default Configuration
+- Minimal code**, **Minimal dependencies**.
+- Use **Tensorflow-java-gpu** as the Serving Runtime
+- Configure the REST API via **AKKA-HTTP**.
+- Implementing dynamic batching via **akka-stream**.
+- Accelerate JVM GPU computation through tensorflow-java dynamic graph generation and serving
 
 
 ## docker
